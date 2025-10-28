@@ -116,7 +116,7 @@ COMTRADE（Common format for Transient Data Exchange）是电力系统中常用�
 ### 📚 深入了解
 
 想要深入了解每种文件的详细格式、数据结构和解析方法，请阅读：
-**👉 [analysis.md - COMTRADE文件格式详细分析](./analysis.md)**
+**👉 [analysis.md - COMTRADE文件格式详细分析](./docs/analysis.md)**
 
 该文档包含：
 - 每种文件的详细结构说明
