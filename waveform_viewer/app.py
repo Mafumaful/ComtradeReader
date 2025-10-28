@@ -19,6 +19,7 @@ from .core.channel_selector import (
 )
 from .visualizers.base import VisualizationConfig
 from .visualizers.plotly_viz import PlotlyVisualizer, PlotlyLineVisualizer
+from .visualizers.optimized_plotly_viz import OptimizedPlotlyVisualizer, FastPlotlyVisualizer
 from .plugins.manager import PluginManager
 from .utils.file_finder import WaveformFileFinder
 from .ui.menu import InteractiveMenu, SimpleMenu
@@ -205,8 +206,10 @@ class WaveformViewerApp:
 
         # 2. 选择可视化样式
         styles = [
-            "散点图（推荐用于密集采样）",
-            "线图（推荐用于稀疏采样）"
+            "优化模式（推荐）- WebGL加速，适合大量通道",
+            "快速模式 - 最快速度，数据降采样",
+            "标准散点图 - 适合少量通道",
+            "标准线图 - 适合稀疏数据"
         ]
 
         self.menu.title = "选择可视化样式:"
@@ -226,9 +229,17 @@ class WaveformViewerApp:
 
         # 创建可视化器
         if idx == 0:
+            self.visualizer = OptimizedPlotlyVisualizer(self.viz_config)
+            print("  使用优化模式：WebGL渲染 + 自动降采样")
+        elif idx == 1:
+            self.visualizer = FastPlotlyVisualizer(self.viz_config)
+            print("  使用快速模式：极致性能优化")
+        elif idx == 2:
             self.visualizer = PlotlyVisualizer(self.viz_config)
+            print("  使用标准散点图模式")
         else:
             self.visualizer = PlotlyLineVisualizer(self.viz_config)
+            print("  使用标准线图模式")
 
         print("\n配置完成！")
 

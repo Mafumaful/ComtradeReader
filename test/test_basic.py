@@ -9,8 +9,8 @@
 import sys
 from pathlib import Path
 
-# 添加项目根目录到Python路径
-sys.path.insert(0, str(Path(__file__).parent))
+# 添加项目根目录到Python路径（test文件夹的父目录）
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def test_imports():
     """测试模块导入"""
@@ -42,7 +42,9 @@ def test_file_finder():
     try:
         from waveform_viewer.utils.file_finder import WaveformFileFinder
 
-        finder = WaveformFileFinder("waves")
+        # 使用绝对路径：项目根目录下的 waves 文件夹
+        waves_path = Path(__file__).parent.parent / "waves"
+        finder = WaveformFileFinder(str(waves_path))
         folders = finder.find_waveform_folders()
 
         print(f"  找到 {len(folders)} 个波形文件夹")
@@ -120,7 +122,7 @@ def test_reader():
         from pathlib import Path
 
         # 查找第一个.cfg文件
-        waves_dir = Path("waves")
+        waves_dir = Path(__file__).parent.parent / "waves"
         cfg_files = list(waves_dir.rglob("*.cfg"))
 
         if not cfg_files:

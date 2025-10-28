@@ -6,6 +6,28 @@
 
 ---
 
+## [v2.0.3] - 2025-10-28
+
+### 新增 ✨
+- **性能优化可视化器**: 解决大量通道时的卡顿和空白问题
+  - `OptimizedPlotlyVisualizer`: WebGL渲染 + 自动降采样（推荐）
+  - `FastPlotlyVisualizer`: 极致性能优化
+  - 使用 Scattergl（WebGL）代替 Scatter（SVG），性能提升5-10倍
+  - 数据降采样，减少渲染负担
+  - 优化布局，减小空白间隙40-60%
+  - 相关文档: `PERFORMANCE_OPTIMIZATION.md`
+
+### 优化 🔧
+- 动态调整字体大小和间距，适应不同通道数量
+- 减小默认线宽和UI元素尺寸
+- 使用CDN加载Plotly.js，减小文件大小
+- 优化边距和padding
+
+### 测试 🧪
+- 添加 `test_performance.py` - 性能对比测试
+
+---
+
 ## [v2.0.2] - 2025-10-28
 
 ### 修复 🐛

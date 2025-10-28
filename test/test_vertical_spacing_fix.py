@@ -9,7 +9,8 @@
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+# 添加项目根目录到Python路径（test文件夹的父目录）
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def test_spacing_calculation():
@@ -81,11 +82,11 @@ def test_real_visualization():
 
     try:
         from waveform_viewer.core.reader import ComtradeReader, Channel
-        from waveform_viewer.visualizers.plotly_viz import PlotlyVisualizer
+        from waveform_viewer.visualizers.optimized_plotly_viz import OptimizedPlotlyVisualizer
         from waveform_viewer.visualizers.base import VisualizationConfig
 
         # 查找测试文件
-        waves_dir = Path("waves")
+        waves_dir = Path(__file__).parent.parent / "waves"
         cfg_files = list(waves_dir.rglob("*.cfg"))
 
         if not cfg_files:
@@ -100,7 +101,7 @@ def test_real_visualization():
         print(f"通道数: {len(reader.analog_channels)}")
 
         # 测试可视化（使用所有通道）
-        visualizer = PlotlyVisualizer(VisualizationConfig())
+        visualizer = OptimizedPlotlyVisualizer(VisualizationConfig())
 
         # 如果通道数很多，测试极端情况
         if len(reader.analog_channels) > 30:

@@ -199,6 +199,7 @@ class PlotlyLineVisualizer(PlotlyVisualizer):
 
         # 保存为HTML文件
         fig.write_html(str(output_path))
+        print(f"  已保存文件: {output_path}")
 
         # 自动打开文件（如果配置了）
         if self.config.auto_open:
