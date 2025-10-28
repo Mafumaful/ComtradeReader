@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .base import BaseVisualizer, VisualizationConfig
 from ..core.reader import ComtradeReader, Channel
+from ..utils.file_opener import open_file_in_browser
 
 
 class PlotlyVisualizer(BaseVisualizer):
@@ -106,6 +107,17 @@ class PlotlyVisualizer(BaseVisualizer):
         # 保存为HTML文件
         fig.write_html(str(output_path))
 
+        # 自动打开文件（如果配置了）
+        if self.config.auto_open:
+            abs_path = Path(output_path).resolve()
+            print(f"  正在打开文件: {abs_path.name}")
+
+            if open_file_in_browser(str(abs_path)):
+                print(f"  ✓ 已在浏览器中打开")
+            else:
+                print(f"  提示: 无法自动打开文件")
+                print(f"  请手动打开: {abs_path}")
+
         return str(output_path)
 
     def get_supported_formats(self) -> List[str]:
@@ -187,5 +199,16 @@ class PlotlyLineVisualizer(PlotlyVisualizer):
 
         # 保存为HTML文件
         fig.write_html(str(output_path))
+
+        # 自动打开文件（如果配置了）
+        if self.config.auto_open:
+            abs_path = Path(output_path).resolve()
+            print(f"  正在打开文件: {abs_path.name}")
+
+            if open_file_in_browser(str(abs_path)):
+                print(f"  ✓ 已在浏览器中打开")
+            else:
+                print(f"  提示: 无法自动打开文件")
+                print(f"  请手动打开: {abs_path}")
 
         return str(output_path)

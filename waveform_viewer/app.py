@@ -212,6 +212,19 @@ class WaveformViewerApp:
         self.menu.title = "选择可视化样式:"
         idx, _ = self.menu.single_choice(styles, default_index=0)
 
+        # 3. 询问是否自动打开文件
+        auto_open_options = [
+            "是（推荐）- 自动在浏览器中打开",
+            "否 - 仅保存文件"
+        ]
+
+        self.menu.title = "生成后自动打开文件？"
+        open_idx, _ = self.menu.single_choice(auto_open_options, default_index=0)
+
+        # 更新配置
+        self.viz_config.auto_open = (open_idx == 0)
+
+        # 创建可视化器
         if idx == 0:
             self.visualizer = PlotlyVisualizer(self.viz_config)
         else:

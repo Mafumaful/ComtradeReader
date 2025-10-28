@@ -6,11 +6,48 @@ COMTRADE波形文件可视化工具
 """
 
 import os
+import sys
 import struct
+import subprocess
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from pathlib import Path
+
+
+def open_file_in_browser(file_path):
+    """
+    在默认浏览器中打开文件
+
+    Args:
+        file_path: 文件路径
+
+    Returns:
+        是否成功打开
+    """
+    try:
+        abs_path = Path(file_path).resolve()
+
+        if not abs_path.exists():
+            return False
+
+        # 根据操作系统使用不同的方法
+        system = sys.platform
+
+        if system == 'darwin':  # macOS
+            subprocess.run(['open', str(abs_path)], check=True)
+            return True
+        elif system == 'win32':  # Windows
+            os.startfile(str(abs_path))
+            return True
+        elif system.startswith('linux'):  # Linux
+            subprocess.run(['xdg-open', str(abs_path)], check=True)
+            return True
+        else:
+            return False
+
+    except Exception:
+        return False
 
 
 class ComtradeReader:
@@ -335,8 +372,17 @@ def visualize_waveforms(comtrade_folder):
             output_file = cfg_file.stem + '_visualization.html'
             output_path = Path(comtrade_folder).parent / output_file
             fig.write_html(str(output_path))
-            print(f"\n  ✓ 可视化结果已保存到: {output_path.name}\n")
-            print("=" * 70)
+            print(f"\n  ✓ 可视化结果已保存到: {output_path.name}")
+
+            # 自动在浏览器中打开文件
+            print(f"  正在打开文件...")
+            if open_file_in_browser(str(output_path)):
+                print(f"  ✓ 已在浏览器中打开")
+            else:
+                print(f"  提示: 无法自动打开文件")
+                print(f"  请手动打开: {output_path}")
+
+            print("\n" + "=" * 70)
 
         except Exception as e:
             print(f"\n  ✗ 处理 {cfg_file.name} 时出错: {str(e)}")

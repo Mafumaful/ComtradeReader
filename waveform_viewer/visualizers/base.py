@@ -20,12 +20,14 @@ class VisualizationConfig:
                  width: int = 1200,
                  height_per_plot: int = 250,
                  title: Optional[str] = None,
-                 show_legend: bool = False):
+                 show_legend: bool = False,
+                 auto_open: bool = True):
         self.output_dir = output_dir or '.'
         self.width = width
         self.height_per_plot = height_per_plot
         self.title = title
         self.show_legend = show_legend
+        self.auto_open = auto_open  # 是否自动打开生成的文件
 
 
 class BaseVisualizer(ABC):
