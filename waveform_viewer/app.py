@@ -20,6 +20,9 @@ from .core.channel_selector import (
 from .visualizers.base import VisualizationConfig
 from .visualizers.plotly_viz import PlotlyVisualizer, PlotlyLineVisualizer
 from .visualizers.optimized_plotly_viz import OptimizedPlotlyVisualizer, FastPlotlyVisualizer
+from .visualizers.hdr_viz import HdrVisualizer
+from .core.hdr_reader import HdrReader
+from .core.rpt_reader import RptReader
 from .plugins.manager import PluginManager
 from .utils.file_finder import WaveformFileFinder
 from .ui.menu import InteractiveMenu, SimpleMenu
@@ -268,16 +271,73 @@ class WaveformViewerApp:
             if len(channels) > 10:
                 print(f"    ... 还有 {len(channels) - 10} 个通道")
 
-            # 3. 生成可视化
+            # 3. 生成波形可视化
             output_path = cfg_file.parent.parent / f"{cfg_file.stem}_visualization.html"
             result_path = self.visualizer.visualize(reader, channels, str(output_path))
 
-            print(f"\n  ✓ 可视化结果已保存到: {Path(result_path).name}")
+            print(f"\n  ✓ 波形可视化已保存到: {Path(result_path).name}")
+
+            # 4. 检查并处理HDR文件
+            self._process_hdr_file(cfg_file)
+
+            # 5. 检查并处理RPT文件
+            self._process_rpt_file(cfg_file)
 
         except Exception as e:
             print(f"\n  ✗ 处理文件时出错: {e}")
             import traceback
             traceback.print_exc()
+
+    def _process_hdr_file(self, cfg_file: Path):
+        """处理HDR文件（如果存在）"""
+        hdr_file = cfg_file.parent / f"{cfg_file.stem}.hdr"
+
+        if not hdr_file.exists():
+            return
+
+        try:
+            print(f"\n  发现HDR文件，正在处理...")
+
+            # 读取HDR文件
+            hdr_reader = HdrReader(str(hdr_file))
+
+            # 生成HDR可视化
+            hdr_visualizer = HdrVisualizer(self.viz_config)
+            output_path = cfg_file.parent.parent / f"{cfg_file.stem}_hdr_report.html"
+            result_path = hdr_visualizer.visualize(hdr_reader, str(output_path))
+
+            if result_path:
+                print(f"  ✓ HDR报告已保存到: {Path(result_path).name}")
+
+        except Exception as e:
+            print(f"  ✗ 处理HDR文件时出错: {e}")
+
+    def _process_rpt_file(self, cfg_file: Path):
+        """处理RPT文件（如果存在）"""
+        rpt_file = cfg_file.parent / f"{cfg_file.stem}.rpt"
+
+        if not rpt_file.exists():
+            return
+
+        try:
+            print(f"\n  发现RPT文件，正在处理...")
+
+            # 读取RPT文件
+            rpt_reader = RptReader(str(rpt_file))
+
+            # 如果RPT文件有效，导出分析数据
+            if rpt_reader.has_valid_data():
+                output_path = cfg_file.parent.parent / f"{cfg_file.stem}_rpt_analysis.txt"
+                result_path = rpt_reader.export_raw_data(str(output_path), max_bytes=2048)
+
+                if result_path:
+                    print(f"  ✓ RPT分析已保存到: {Path(result_path).name}")
+                    print(f"  提示: RPT文件为专有二进制格式，已导出十六进制分析")
+            else:
+                print(f"  提示: RPT文件格式无法识别")
+
+        except Exception as e:
+            print(f"  ✗ 处理RPT文件时出错: {e}")
 
     def set_channel_selector(self, selector: ChannelSelectionStrategy):
         """设置通道选择器"""
